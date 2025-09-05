@@ -1,20 +1,16 @@
-import genToken from "../config/token.js"
-import User from "../models/user.model.js"
-import bcrypt from "bcryptjs"
+import genToken from "../config/token.js";
+import User from "../models/user.model.js";
+import bcrypt from "bcryptjs";
 
-
-
-
-
-export const signUp = async(req,res)=>{
+export const signUp = async (req, res) => {
   try {
-    const{name,email,password}=req.body
+    const { name, email, password } = req.body;
 
-    const existEmail=await User.findOne({email})
-    if(existEmail){
-        return res.status(400).json({message:"email already exists!!"})
+    const existEmail = await User.findOne({ email });
+    if (existEmail) {
+      return res.status(400).json({ message: "email already exists!!" });
     }
-     if (password.length < 6)
+    if (password.length < 6)
       return res
         .status(400)
         .json({ message: "Password must be at least 6 characters" });
@@ -26,30 +22,30 @@ export const signUp = async(req,res)=>{
       email,
       password: hashedPassword,
     });
-      
-    const token = await genToken(user._id)
 
-    res.cookie("token",token,{
-        httpOnly:true,
-        maxAge:7*24*60*60*1000,
-        sameSite:"None",
-        secure:true,
- })
+    const token = await genToken(user._id);
 
- return res.status(201).json(user)
+    res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      sameSite: "None", // ✅ for cross-site cookies
+      secure: true, // ✅ required for HTTPS
+    });
 
+    return res.status(201).json(user);
   } catch (error) {
-    return res.status(500).json({message:"signup error"})
+    return res.status(500).json({ message: "signup error" });
   }
-}
-
+};
 
 export const Login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
 
     const user = await User.findOne({ email });
@@ -67,25 +63,29 @@ export const Login = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      sameSite: "None", // set to 'lax' or 'strict' if not using cross-site cookies
-      secure: true, // set true in production with HTTPS
+      sameSite: "None",
+      secure: true,
     });
 
     const { password: pass, ...userData } = user._doc;
     return res.status(200).json(userData);
-
   } catch (error) {
     console.error("Login error:", error);
-    return res.status(500).json({ message: "Server login error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server login error", error: error.message });
   }
 };
 
-
-export const logOut = async (req,res)=>{
-    try {
-        res.clearCookie("token")
-        return res.status(200).json({message:"log out successfully"})
-    } catch (error) {
-         return res.status(500).json({message:"log out error"})
-    }
-}
+export const logOut = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      sameSite: "None", // ✅ must match cookie settings
+      secure: true, // ✅ must match cookie settings
+    });
+    return res.status(200).json({ message: "log out successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "log out error" });
+  }
+};
