@@ -18,7 +18,7 @@ const port = process.env.PORT || 3000;
 
 // ✅ Middlewares
 app.use(cors({
-  origin: "http://localhost:5173",  // frontend origin
+  origin: "https://ai-frontend-jet.vercel.app",
   credentials: true
 }));
 app.use(express.json());
@@ -29,7 +29,10 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send({
+    activeStatus: true,
+    error:false,
+  });
 });
 
 
