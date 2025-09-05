@@ -4,7 +4,7 @@ import { asktoAssistant, getCurrentUser, updateAssistant } from "../controllers/
 import isAuth from "../middlewares/isAuth.js"
 import upload from "../middlewares/multer.js"
 import { connect } from "mongoose"
-import { connectArduino } from "../controllers/aurdino.js"
+
 const userRouter=express.Router()
 
 

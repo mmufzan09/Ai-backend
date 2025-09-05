@@ -8,13 +8,13 @@ import connectDb from "./config/db.js";
 import authRouter from "./routes/auth.routes.js";
 import userRouter from "./routes/user.routes.js";
 import geminiResponse from "./gemini.js";
-import { connectArduino, sendToArduino } from "./controllers/aurdino.js";
+
 
 // ✅ Load environment variables
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 
 // ✅ Middlewares
 app.use(cors({
